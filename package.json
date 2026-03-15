@@ -1,0 +1,33 @@
+{
+  "name": "cellwave",
+  "version": "1.0.0",
+  "description": "Interactive fluid dynamics simulator with hexagonal and square grid support",
+  "main": "src/cellwave-simulator.js",
+  "type": "module",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "serve": "python3 -m http.server 8000"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/newjordan/Cellwaves.git"
+  },
+  "keywords": [
+    "fluid-dynamics",
+    "simulation",
+    "physics",
+    "hexagonal-grid",
+    "cellular-automata",
+    "interactive",
+    "javascript",
+    "canvas",
+    "fluid-simulation",
+    "navier-stokes"
+  ],
+  "author": "CellWave Contributors",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/newjordan/Cellwaves/issues"
+  },
+  "homepage": "https://github.com/newjordan/Cellwaves#readme"
+}
