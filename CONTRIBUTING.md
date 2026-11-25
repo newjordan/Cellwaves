@@ -37,12 +37,12 @@ git checkout -b fix/bug-description
 ### 4. Test Locally
 
 ```bash
-# Start local server
-python3 -m http.server 8000
-
-# Open http://localhost:8000/demo/
-# Verify your changes work
+npm install
+npm test
+npm run dev
 ```
+
+Open http://localhost:5173/ and check the simulation, the parameter controls, and both grid types.
 
 ### 5. Commit Your Changes
 
@@ -132,7 +132,7 @@ A good bug report includes:
 - 1920×1080 display
 
 **Steps to Reproduce:**
-1. Open demo/index.html
+1. Open the Vite dev server
 2. Set grid size to 200
 3. Switch to hexagonal grid
 4. Observe flickering
@@ -156,13 +156,15 @@ A good feature request includes:
 
 ## 🧪 Testing
 
-Before submitting:
+`npm test` runs the simulation-step suite. Run it before submitting.
+
+Also check by hand:
 
 - ✅ Test in multiple browsers (Chrome, Firefox, Safari)
 - ✅ Test different grid sizes (small, medium, large)
 - ✅ Test both grid types (square and hexagonal)
 - ✅ Check browser console for errors
-- ✅ Verify no performance regressions
+- ✅ Verify no performance regressions, including Auto mode on a large grid
 - ✅ Test on different screen sizes if UI changes
 
 ## 📚 Documentation
@@ -171,7 +173,6 @@ When adding features:
 
 - Update README.md if user-facing
 - Add JSDoc comments for public APIs
-- Create examples in docs/ folder
 - Update CHANGELOG.md
 
 ## 🎨 Design Principles
@@ -179,7 +180,7 @@ When adding features:
 When contributing, keep these in mind:
 
 1. **Performance First**: This is a real-time simulation
-2. **Zero Dependencies**: Keep it pure JavaScript
+2. **No runtime dependencies**: The simulation stays plain JavaScript. Vite and Vitest are dev tooling only
 3. **Educational**: Code should be readable and well-commented
 4. **Configurable**: Expose parameters for experimentation
 5. **Backward Compatible**: Don't break existing APIs

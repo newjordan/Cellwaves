@@ -1,345 +1,155 @@
-# 🌊 CellWave
+# CellWave
 
-**Interactive Fluid Dynamics Simulator** - A pure JavaScript implementation of fluid dynamics with support for both square and hexagonal grid systems.
+A cell-to-cell simulation matrix. Every cell holds a velocity, and each step advects that velocity into its neighbors, diffuses it, then adds noise, currents, emitters, and solid obstacles. The canvas paints the matrix directly: bright cells are slow, dark cells are fast.
 
+[![CI](https://github.com/newjordan/Cellwaves/actions/workflows/ci.yml/badge.svg)](https://github.com/newjordan/Cellwaves/actions/workflows/ci.yml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
-[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-yellow.svg)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
-[![No Dependencies](https://img.shields.io/badge/dependencies-none-brightgreen.svg)]()
-[![Live Demo](https://img.shields.io/badge/demo-live-success.svg)](https://newjordan.github.io/Cellwaves/demo/)
+[![Live demo](https://img.shields.io/badge/demo-GitHub%20Pages-success.svg)](https://newjordan.github.io/Cellwaves/)
 
-> **[🚀 Try the Live Demo](https://newjordan.github.io/Cellwaves/demo/)**
+The simulation runtime is plain JavaScript. [Vite](https://vite.dev/) builds the page, and [Vitest](https://vitest.dev/) tests a single step of the matrix.
 
----
+**GPU sibling:** [cellwaveGPU](https://github.com/newjordan/cellwaveGPU) is the WebGL2 version of this algorithm (Svelte 5 and OGL), with live controls and a snippet you can copy. The playground is at [cellwave-gpu.vercel.app](https://cellwave-gpu.vercel.app). This repository is the CPU matrix: the step runs in JavaScript so it can be read and tested without a GPU.
 
-## 📸 Gallery
+## Gallery
 
-<div align="center">
+The controls panel, with the velocity matrix on the left. Auto mode steps the grid down when a device cannot hold the frame budget.
 
-### Video Demonstration
+![CellWave controls beside the live velocity matrix](assets/screenshots/ui_controls.png)
 
-<video src="https://github.com/user-attachments/assets/cellwave_1.mp4" controls width="100%" style="max-width: 800px;">
-  Your browser does not support the video tag. [Download the video](assets/screenshots/cellwave_1.mp4)
-</video>
+Animated square-grid flow, then still fields from the same painter. Bright is slow, dark is fast.
 
-> **Note:** If the video doesn't play above, you can [watch it directly here](assets/screenshots/cellwave_1.mp4) or try the [live demo](https://newjordan.github.io/Cellwaves/demo/)!
+![Animated square-grid flow](assets/screenshots/sq_waterflow_1.gif)
 
-### Animated GIFs
+![A second square-grid flow](assets/screenshots/sq_waterflow_2.gif)
 
-![Fluid Flow Animation](assets/screenshots/sq_waterflow_1.gif)
+| | | |
+| --- | --- | --- |
+| ![Broad diagonal wave bands](assets/screenshots/ex_1.png) | ![Layered simplex turbulence](assets/screenshots/ex_2.png) | ![Fine diagonal interference](assets/screenshots/ex_3.png) |
+| Wave bands | Simplex turbulence | Fine interference |
+| ![Velocity field, study 4](assets/screenshots/ex_4.png) | ![Velocity field, study 5](assets/screenshots/ex_5.png) | ![Velocity field, study 6](assets/screenshots/ex_6.png) |
+| Field study | Field study | Field study |
+| ![Velocity field, study 7](assets/screenshots/ex_7.png) | ![Velocity field, study 8](assets/screenshots/ex_8.png) | ![Velocity field, study 9](assets/screenshots/ex_9.png) |
+| Field study | Field study | Field study |
 
-### Static Examples
+A short recording of the matrix is in [assets/screenshots/cellwave_1.mp4](assets/screenshots/cellwave_1.mp4).
 
-<table>
-  <tr>
-    <td><img src="assets/screenshots/ex_1.png" alt="Example 1" width="250"/></td>
-    <td><img src="assets/screenshots/ex_2.png" alt="Example 2" width="250"/></td>
-    <td><img src="assets/screenshots/ex_3.png" alt="Example 3" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="assets/screenshots/ex_4.png" alt="Example 4" width="250"/></td>
-    <td><img src="assets/screenshots/ex_5.png" alt="Example 5" width="250"/></td>
-    <td><img src="assets/screenshots/ex_6.png" alt="Example 6" width="250"/></td>
-  </tr>
-  <tr>
-    <td><img src="assets/screenshots/ex_7.png" alt="Example 7" width="250"/></td>
-    <td><img src="assets/screenshots/ex_8.png" alt="Example 8" width="250"/></td>
-    <td><img src="assets/screenshots/ex_9.png" alt="Example 9" width="250"/></td>
-  </tr>
-</table>
+## Run it
 
-</div>
-
----
-
-## ✨ Features
-
-- **🔷 Dual Grid Systems**: Switch between square and hexagonal grids in real-time
-- **🌀 Multiple Force Types**: Currents, emitters, obstacles, and multi-layered noise
-- **📐 Hexagonal Grid Physics**: Based on academic research ([Hamilton & Torin, 2014](https://doi.org/10.1016/j.jcp.2014.01.024))
-- **🎨 Real-time Visualization**: Beautiful fluid flow rendering with customizable parameters
-- **🚫 Zero Dependencies**: Pure JavaScript, no external libraries required
-- **⚡ Performance Optimized**: Quadtree spatial partitioning for efficient computation
-- **🎮 Interactive Controls**: Click, drag, and right-click to manipulate the simulation
-- **🎵 Procedural Noise**: 3D Simplex noise for natural flow patterns
-
----
-
-## 🚀 Quick Start
-
-### Try Online
-
-**[Launch Live Demo →](https://newjordan.github.io/Cellwaves/demo/)**
-
-No installation required! Try it directly in your browser.
-
-### Run Locally
-
-1. Clone the repository:
 ```bash
 git clone https://github.com/newjordan/Cellwaves.git
-cd cellwave
-```
-
-2. Start a local HTTP server:
-```bash
-# Using Python 3
-python3 -m http.server 8000
-
-# Or using Node.js
-npx http-server -p 8000
-
-# Or using npm script
+cd Cellwaves
+npm install
 npm run dev
 ```
 
-3. Open your browser to:
-```
-http://localhost:8000/demo/
-```
+Open http://localhost:5173/.
 
-### Direct Usage
-
-Simply open `demo/index.html` in your browser after starting an HTTP server (required for ES6 modules).
-
----
-
-## 🎮 Controls
-
-### Mouse Interactions
-- **Click**: Create a force burst
-- **Drag**: Apply directional force
-- **Right-click**: Add a current flow
-
-### UI Controls
-- **Grid Type**: Switch between square and hexagonal grids
-- **Grid Size**: Adjust simulation resolution (10-420 cells)
-- **Visual Density**: Control rendering detail (2x-8x)
-- **Physics Parameters**: Tune advection, diffusion, and visual scale
-- **Force Strength**: Adjust interaction intensity
-
-### Force Types
-- **🌊 Currents**: Linear flow streams with adjustable width and taper
-- **💨 Emitters**: Directional force jets with spread control
-- **🚧 Obstacles**: Solid barriers that block flow
-- **🎵 Noise Layers**: Procedural patterns (Simplex or Wave-based)
-
----
-
-## 📚 How It Works
-
-### Grid Systems
-
-**Square Grid** (Traditional)
-- 8-neighbor diffusion
-- Standard Laplacian operator
-- Fast and familiar
-
-**Hexagonal Grid** (Advanced)
-- 6-neighbor system
-- Isotropic diffusion properties
-- More natural flow patterns
-- Based on discrete hexagonal Laplacian: `δH,Δ = (2/3h²) * Σ(neighbors - center)`
-
-### Physics Engine
-
-The simulation uses:
-1. **Advection**: Self-advection of velocity field
-2. **Diffusion**: Smoothing via Laplacian operator
-3. **Force Accumulation**: Layered forces from multiple sources
-4. **Boundary Conditions**: Proper handling of grid edges
-5. **Noise Generation**: 3D Simplex noise for temporal variation
-
-### Rendering Pipeline
-
-```
-Physics Update → Velocity Field → Color Mapping → Canvas Rendering
-     ↓               ↓                 ↓               ↓
-  10-60 FPS      Grid Cells      HSL Colors      800×800px
+```bash
+npm test          # one simulation step, plus the performance fallback policy
+npm run build     # static site in dist/
+npm run preview   # serve that build
 ```
 
----
+GitHub Actions runs the tests and the production build on every pull request. Pushes to `main` also deploy `dist/` to GitHub Pages. In the repository settings, set Pages → Build and deployment → Source to **GitHub Actions**. The published site is https://newjordan.github.io/Cellwaves/. The old `/demo/` path redirects to that root.
 
-## 🏗️ Project Structure
+## Controls
+
+- **Click or tap** for a force burst. **Drag** to push the field. **Right-click** to add a current.
+- **Grid type** switches square (8 neighbors) and hexagonal (6 neighbors) without rebuilding the forces.
+- **Grid size**, **visual density**, **advection**, **diffusion**, and **visual scale** are on the physics panel.
+- **Time step** advances the noise and wave clock. **Evolve speed** is how fast auto-evolve morphs those layers. **Obstacle detail** is the quadtree depth used to draw solid cells.
+- **Performance** is Auto, Quality, or Low power. Auto reads the device (core count, memory, data saver, reduced motion, small screens) and, if frames stay slower than about 30fps, lowers density, then the grid, then steps the simulation every second or third frame. Quality holds the resolution you picked.
+- Each current, emitter, obstacle, and noise layer has its own sliders, including emitter taper and speed.
+
+## How a step works
+
+`CellWaveSimulator.updateFlow()` is one step:
+
+1. **Occluders** zero any cell inside a rectangle.
+2. **Advection** samples the cell upstream of the current velocity and keeps `advection` of that sample.
+3. **Diffusion** adds a Laplacian. Square grids average 8 neighbors. Hex grids use `δH,Δ = (2/3h²) Σ(neighbor − center)`.
+4. **Noise** adds simplex or wave forcing. `timeStep` moves the phase.
+5. **Currents** add a tapered tube of force between two cells.
+6. **Emitters** add a cone of force with length, spread, taper, and speed.
+
+The painter writes one pixel per cell into an `ImageData` buffer, marks obstacle blocks, then scales that buffer up to the display canvas.
+
+## Project layout
 
 ```
-cellwave/
-├── demo/
-│   └── index.html              # Interactive demo page
-├── src/
-│   ├── cellwave-simulator.js  # Core physics engine
-│   └── cellwave-app.js         # Application controller
-├── docs/                       # Documentation
-├── assets/
-│   └── screenshots/            # Demo images
-├── .github/
-│   └── ISSUE_TEMPLATE/         # GitHub issue templates
-├── package.json                # Project metadata
-├── LICENSE                     # MIT License
-└── README.md                   # This file
+index.html                    page
+src/cellwave-simulator.js     matrix step and painter
+src/cellwave-app.js           controls, pointer input, frame loop
+src/performance.js            slow-device policy
+src/style.css
+tests/simulation-step.test.js
+public/demo/index.html        redirect from the old URL
+.github/workflows/ci.yml
+.github/workflows/pages.yml
+assets/screenshots/
 ```
 
----
-
-## 🔧 API Usage
-
-### Basic Setup
+## API
 
 ```javascript
 import { CellWaveSimulator } from './src/cellwave-simulator.js';
 
-// Create simulator (planeSize, density)
-const simulator = new CellWaveSimulator(100, 4);
+const simulator = new CellWaveSimulator(130, 2);
+simulator.setGridSize(80);
+simulator.setGridType(true); // hexagonal
+simulator.advection = 0.9;
+simulator.diffusion = 0.1;
+simulator.visScale = 1;
+simulator.timeStep = 0.005;
 
-// Set grid size
-simulator.setGridSize(50);
-
-// Choose grid type
-simulator.setGridType(true); // true = hexagonal, false = square
-
-// Update physics
-simulator.updateFlow();
-
-// Render to canvas
-simulator.drawFlow();
-const canvas = simulator.getCanvas();
-```
-
-### Adding Forces
-
-```javascript
-// Add a current
 simulator.addCurrent({
   start: { x: 10, y: 10 },
   end: { x: 30, y: 30 },
   strength: 0.8,
-  width: 2.0,
-  taper: 1.0,
-  speed: 1.0,
+  width: 2,
+  taper: 1,
+  speed: 1,
   curve: 0
 });
 
-// Add an emitter
 simulator.addEmitter({
-  x: 20,
-  y: 20,
-  angle: 45,
-  strength: 1.0,
-  length: 5.0,
-  spread: 1.5,
-  taper: 2.0,
-  speed: 1.0,
-  curve: 0
+  x: 20, y: 20, angle: 45,
+  strength: 1, length: 5, spread: 1.5,
+  taper: 2, speed: 1, curve: 0
 });
 
-// Add an obstacle
-simulator.addOccluder({
-  type: 'rect',
-  x0: 15,
-  y0: 15,
-  x1: 25,
-  y1: 25
-});
+simulator.addOccluder({ type: 'rect', x0: 15, y0: 15, x1: 25, y1: 25 });
 
-// Add a noise layer
 simulator.addNoiseLayer({
-  scale: 20,
-  strength: 0.5,
-  speed: 1.0,
-  enabled: true,
-  pattern: 'simplex' // or 'wave'
+  scale: 20, strength: 0.5, speed: 1,
+  enabled: true, pattern: 'simplex' // or 'wave'
 });
+
+simulator.updateFlow();
+simulator.drawFlow();
 ```
 
----
+`curve` is accepted on currents and emitters and stored with the force. The step does not bend the path with it.
 
-## 🎨 Customization
+## Performance
 
-### Physics Parameters
+| Grid | Density | What to expect |
+| --- | --- | --- |
+| 60×60 | 2× | Starting size on a slow device |
+| 130×130 | 2× | Default on a desktop |
+| 200×200 | 2× | Noticeably heavier |
+| 420×420 | 2× | Upper slider bound |
 
-```javascript
-simulator.advection = 0.9;   // Self-advection strength (0.1-1.0)
-simulator.diffusion = 0.1;   // Diffusion rate (0.01-0.5)
-simulator.visScale = 1.0;    // Visual scaling (0.1-3.0)
-```
+Auto mode will not stay on a size the machine cannot animate. Chrome and Firefox are the browsers this is exercised in. The page needs ES modules and canvas.
 
-### Grid Configuration
+## References
 
-```javascript
-simulator.setGridSize(100);   // 10-420 cells
-simulator.setDensity(4);      // 2-8x rendering density
-```
+- Hamilton, M.J., and Torin, D.J. (2014). [Discrete differential operators on hexagonal grids](https://doi.org/10.1016/j.jcp.2014.01.024). *Journal of Computational Physics*, 266, 161–179.
+- Perlin, K. (2001). Noise hardware. *Real-Time Shading SIGGRAPH Course Notes*.
+- Stam, J. (1999). [Stable Fluids](https://www.dgp.toronto.edu/public_user/stam/reality/Research/pdf/ns.pdf). *SIGGRAPH 99*.
 
----
+## License
 
-## 📊 Performance
+MIT. See [LICENSE](LICENSE).
 
-| Grid Size | Density | Typical FPS | Notes |
-|-----------|---------|-------------|-------|
-| 50×50 | 4x | 60 FPS | Smooth, recommended |
-| 100×100 | 4x | 45-60 FPS | Good balance |
-| 200×200 | 2x | 30-45 FPS | Large scale |
-| 420×420 | 2x | 15-30 FPS | Maximum detail |
-
-Performance varies by browser and hardware. Chrome and Firefox recommended.
-
----
-
-## 🧪 Browser Compatibility
-
-- ✅ Chrome 90+
-- ✅ Firefox 88+
-- ✅ Safari 14+
-- ✅ Edge 90+
-
-Requires ES6 module support and Canvas API.
-
----
-
-## 📖 Research & References
-
-This implementation is based on:
-
-- **Hexagonal Grid Theory**: Hamilton, M.J., & Torin, D.J. (2014). "Discrete differential operators on hexagonal grids." *Journal of Computational Physics*, 266, 161-179. [DOI: 10.1016/j.jcp.2014.01.024](https://doi.org/10.1016/j.jcp.2014.01.024)
-
-- **Simplex Noise**: Perlin, K. (2001). "Noise hardware." *Real-Time Shading SIGGRAPH Course Notes*.
-
-- **Fluid Simulation**: Stam, J. (1999). "Stable Fluids." *SIGGRAPH 99 Conference Proceedings*.
-
----
-
-## 🤝 Contributing
-
-Contributions are welcome! Please see [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
-
-### Ways to Contribute
-- 🐛 Report bugs via [GitHub Issues](https://github.com/newjordan/Cellwaves/issues)
-- 💡 Suggest features or improvements
-- 📝 Improve documentation
-- 🔧 Submit pull requests
-- 🎨 Create demos and examples
-
----
-
-## 📜 License
-
-This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
-
----
-
-## 🙏 Acknowledgments
-
-- Hexagonal grid mathematics from Hamilton & Torin research
-- Simplex noise algorithm by Ken Perlin
-- Inspired by Jos Stam's stable fluids paper
-
----
-
-## 📬 Contact & Links
-
-- **Repository**: [github.com/newjordan/Cellwaves](https://github.com/newjordan/Cellwaves)
-- **Issues**: [github.com/newjordan/Cellwaves/issues](https://github.com/newjordan/Cellwaves/issues)
-- **Discussions**: [github.com/newjordan/Cellwaves/discussions](https://github.com/newjordan/Cellwaves/discussions)
-
----
-
-**Made with 🌊 by the CellWave community**
+The same algorithm on the GPU is [cellwaveGPU](https://github.com/newjordan/cellwaveGPU).
