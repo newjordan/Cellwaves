@@ -183,6 +183,8 @@ export class CellWaveSimulator {
         this.advection = 0.15;
         this.diffusion = 0.04;
         this.visScale = 0.8; // velocity magnitude that maps to pure black
+        // Clock advance per updateFlow() call. Noise and wave layers read this.
+        this.timeStep = 0.005;
         
         // Arrays for storing forces and objects
         this.occluders = [];
@@ -350,11 +352,17 @@ export class CellWaveSimulator {
         }
     }
 
+    /**
+     * Advance the velocity field by one simulation step.
+     * Advection, diffusion, noise, currents, emitters, and occluders run together.
+     * `timeStep` is the noise and wave clock advance for this step.
+     */
     updateFlow() {
         const newVelX = this.velocity.velX.map(row => row.slice());
         const newVelY = this.velocity.velY.map(row => row.slice());
-        
-        this.noiseTime += 0.005; // Base increment for noise animation
+
+        const step = Number.isFinite(this.timeStep) ? this.timeStep : 0;
+        this.noiseTime += step;
 
         for (let y = 0; y < this.gridSize; y++) {
             for (let x = 0; x < this.gridSize; x++) {
@@ -480,29 +488,9 @@ export class CellWaveSimulator {
     }
 
     drawFlow() {
-        // 1 – render each simulation cell to the low-res canvas (one pixel per cell)
-        this.simCtx.clearRect(0, 0, this.gridSize, this.gridSize);
+        this.paintSimulation();
 
-        for (let y = 0; y < this.gridSize; y++) {
-            for (let x = 0; x < this.gridSize; x++) {
-                const speed = Math.hypot(this.velocity.velX[y][x], this.velocity.velY[y][x]);
-                let grey = Math.floor(255 * (1 - Math.tanh(speed / this.visScale)));
-
-                // Clean velocity-based rendering only
-
-                this.simCtx.fillStyle = `rgb(${grey},${grey},${grey})`;
-                this.simCtx.fillRect(x, y, 1, 1);
-            }
-        }
-
-        // Overlay occluder blocks with higher-detail quadtree
-        for (const cell of this.quadCells) {
-            if (!cell.blocked) continue;
-            this.simCtx.fillStyle = 'rgb(20,20,20)';
-            this.simCtx.fillRect(cell.x, cell.y, cell.size, cell.size);
-        }
-
-        // 2 – smoothly upscale the low-res canvas onto the high-res texture canvas
+        // Smoothly upscale the low-res field onto the display canvas.
         this.ctx.imageSmoothingEnabled = true;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
         this.ctx.drawImage(
@@ -510,10 +498,84 @@ export class CellWaveSimulator {
             0, 0, this.gridSize, this.gridSize,
             0, 0, this.canvas.width, this.canvas.height
         );
-        
-        // 3 – Add hexagonal grid overlay for debugging when in hex mode
-        if (this.useHexGrid && this.gridSize <= 50) { // Only show for reasonable grid sizes
+
+        if (this.useHexGrid && this.gridSize <= 50) {
             this.drawHexGridOverlay();
+        }
+    }
+
+    /**
+     * Paint one pixel per cell. ImageData is one write for the whole matrix.
+     * Contexts without createImageData fall back to per-cell fillRect.
+     */
+    paintSimulation() {
+        const size = this.gridSize;
+        if (!this.simCtx) return;
+
+        if (typeof this.simCtx.createImageData === 'function' && typeof this.simCtx.putImageData === 'function') {
+            const image = this.simCtx.createImageData(size, size);
+            this.writeFieldImage(image.data, size);
+            this.simCtx.putImageData(image, 0, 0);
+            return;
+        }
+
+        this.paintFieldWithFillRects(size);
+    }
+
+    writeFieldImage(data, size) {
+        const vis = this.visScale > 0 ? this.visScale : 0.0001;
+        const velX = this.velocity.velX;
+        const velY = this.velocity.velY;
+
+        for (let y = 0; y < size; y++) {
+            const rowX = velX[y];
+            const rowY = velY[y];
+            for (let x = 0; x < size; x++) {
+                const speed = Math.hypot(rowX[x], rowY[x]);
+                const grey = Math.max(0, Math.min(255, (255 * (1 - Math.tanh(speed / vis))) | 0));
+                const i = (y * size + x) * 4;
+                data[i] = grey;
+                data[i + 1] = grey;
+                data[i + 2] = grey;
+                data[i + 3] = 255;
+            }
+        }
+
+        for (const cell of this.quadCells) {
+            if (!cell.blocked) continue;
+            const x0 = Math.max(0, cell.x);
+            const y0 = Math.max(0, cell.y);
+            const x1 = Math.min(size, cell.x + cell.size);
+            const y1 = Math.min(size, cell.y + cell.size);
+            for (let y = y0; y < y1; y++) {
+                for (let x = x0; x < x1; x++) {
+                    const i = (y * size + x) * 4;
+                    data[i] = 20;
+                    data[i + 1] = 20;
+                    data[i + 2] = 20;
+                    data[i + 3] = 255;
+                }
+            }
+        }
+    }
+
+    paintFieldWithFillRects(size) {
+        const vis = this.visScale > 0 ? this.visScale : 0.0001;
+        this.simCtx.clearRect(0, 0, size, size);
+
+        for (let y = 0; y < size; y++) {
+            for (let x = 0; x < size; x++) {
+                const speed = Math.hypot(this.velocity.velX[y][x], this.velocity.velY[y][x]);
+                const grey = Math.max(0, Math.min(255, Math.floor(255 * (1 - Math.tanh(speed / vis)))));
+                this.simCtx.fillStyle = `rgb(${grey},${grey},${grey})`;
+                this.simCtx.fillRect(x, y, 1, 1);
+            }
+        }
+
+        for (const cell of this.quadCells) {
+            if (!cell.blocked) continue;
+            this.simCtx.fillStyle = 'rgb(20,20,20)';
+            this.simCtx.fillRect(cell.x, cell.y, cell.size, cell.size);
         }
     }
     

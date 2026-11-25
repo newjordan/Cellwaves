@@ -1,12 +1,20 @@
 {
   "name": "cellwave",
-  "version": "1.0.0",
-  "description": "Interactive fluid dynamics simulator with hexagonal and square grid support",
-  "main": "src/cellwave-simulator.js",
+  "version": "1.1.0",
+  "description": "Interactive cell-to-cell fluid matrix. CPU canvas visualizer for the CellWave velocity field.",
   "type": "module",
+  "main": "src/cellwave-simulator.js",
+  "exports": {
+    ".": "./src/cellwave-simulator.js"
+  },
   "scripts": {
-    "dev": "python3 -m http.server 8000",
-    "serve": "python3 -m http.server 8000"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "engines": {
+    "node": ">=22.12.0"
   },
   "repository": {
     "type": "git",
@@ -29,5 +37,10 @@
   "bugs": {
     "url": "https://github.com/newjordan/Cellwaves/issues"
   },
-  "homepage": "https://github.com/newjordan/Cellwaves#readme"
+  "homepage": "https://newjordan.github.io/Cellwaves/",
+  "devDependencies": {
+    "happy-dom": "^21.0.4",
+    "vite": "^8.3.8",
+    "vitest": "^5.1.2"
+  }
 }

@@ -8,6 +8,11 @@
 # Dependencies
 node_modules/
 
+# Vite
+dist/
+.vite/
+coverage/
+
 # Temporary files
 *.tmp
 *.log

@@ -5,6 +5,21 @@ All notable changes to CellWave will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-11-25
+
+### Added
+- Vite 8 dev server and static production build
+- Vitest coverage for one simulation step: advection, square and hexagonal diffusion, currents, emitters, occluders, and wave time
+- Controls for time step, evolve speed, and obstacle detail, plus emitter taper and speed
+- Performance mode (Auto, Quality, Low power) that starts lighter on slow devices and steps the grid down when frames miss their budget
+- GitHub Actions CI and a static GitHub Pages deploy workflow
+
+### Changed
+- The demo is the site root. `/demo/` redirects there
+- Layer controls listen for input events directly, instead of the deprecated `window.event` global
+- The field is painted with one `ImageData` write per frame
+- README gallery, local setup, and a pointer to the WebGL sibling [cellwaveGPU](https://github.com/newjordan/cellwaveGPU)
+
 ## [1.0.0] - 2025-01-XX
 
 ### 🎉 Initial Release
